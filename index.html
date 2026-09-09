@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Чек-лист: как завершить СОУТ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Конструктор договора на СОУТ</title>
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.min.js">
+  </script>
   <style>
     * {
       margin: 0;
@@ -13,261 +15,1382 @@
     body {
       font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
       background: #e9eff5;
+      padding: 30px 20px;
+      color: #111;
+    }
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .header {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      min-height: 100vh;
-      padding: 24px 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
     }
-    .card {
-      max-width: 700px;
-      width: 100%;
-      background: #ffffff;
-      border-radius: 32px;
-      padding: 32px 36px 36px;
-      box-shadow: 0 20px 60px rgba(0,30,60,0.12);
-      position: relative;
-    }
-
-    /* Кнопка печати */
-    .print-btn {
-      position: absolute;
-      top: 20px;
-      right: 24px;
-      background: #e6edf5;
-      border: none;
-      border-radius: 40px;
-      padding: 6px 16px;
-      font-size: 13px;
-      font-weight: 600;
+    .header h1 {
+      font-size: 26px;
       color: #003366;
-      cursor: pointer;
-      transition: 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .print-btn:hover {
-      background: #d0ddee;
-    }
-
-    h1 {
-      font-size: 24px;
-      font-weight: 700;
-      color: #003366;
-      border-bottom: 3px solid #e6f0fa;
-      padding-bottom: 14px;
-      margin-bottom: 20px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .sub {
+    .header h1 small {
       font-size: 15px;
-      color: #1a3a5f;
-      background: #f0f7fe;
-      padding: 10px 16px;
-      border-radius: 12px;
-      border-left: 5px solid #2b7bb6;
-      margin-bottom: 24px;
-      font-weight: 500;
+      font-weight: 400;
+      color: #4a6f8f;
     }
-    .checklist-item {
+    .header-actions {
       display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 12px 0;
-      border-bottom: 1px solid #eef4fa;
+      gap: 12px;
     }
-    .checklist-item:last-child {
-      border-bottom: none;
-    }
-    .checklist-item input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
-      margin-top: 2px;
-      accent-color: #003366;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .checklist-item label {
-      font-size: 16px;
-      line-height: 1.5;
-      color: #152b3d;
-      cursor: pointer;
-    }
-    .checklist-item label strong {
-      color: #003366;
-    }
-    .checklist-item.done label {
-      text-decoration: line-through;
-      color: #6f8aa8;
-    }
-    .progress {
-      background: #e6edf5;
+    .btn {
+      padding: 8px 22px;
+      border: none;
       border-radius: 40px;
-      height: 8px;
-      margin: 18px 0 10px;
-      overflow: hidden;
-    }
-    .progress-bar {
-      height: 100%;
-      background: #003366;
-      width: 0%;
-      transition: width 0.3s;
-    }
-    .progress-text {
-      text-align: right;
       font-size: 14px;
       font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .btn-primary {
+      background: #003366;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #002244;
+    }
+    .btn-success {
+      background: #1e8b4c;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: #15703d;
+    }
+    .btn-word {
+      background: #2b5797;
+      color: #fff;
+    }
+    .btn-word:hover {
+      background: #1d3f6e;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 28px;
+    }
+
+    .form-panel {
+      background: #fff;
+      border-radius: 24px;
+      padding: 24px 26px;
+      box-shadow: 0 8px 30px rgba(0, 30, 60, 0.08);
+      max-height: calc(100vh - 150px);
+      overflow-y: auto;
+    }
+    .form-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+    .form-panel::-webkit-scrollbar-thumb {
+      background: #b6ccdd;
+      border-radius: 10px;
+    }
+
+    .form-panel h2 {
+      font-size: 17px;
       color: #003366;
-      margin-bottom: 6px;
+      border-bottom: 2px solid #e6f0fa;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
     }
-    .contacts {
-      margin-top: 28px;
-      padding: 16px 20px;
-      background: #f8faff;
-      border-radius: 16px;
-      border: 1px solid #dde8f2;
-      text-align: center;
+
+    .field {
+      margin-bottom: 12px;
     }
-    .contacts p {
-      font-size: 15px;
+    .field label {
+      display: block;
+      font-size: 12.5px;
       font-weight: 600;
+      color: #1a3a5f;
+      margin-bottom: 3px;
+    }
+    .field input {
+      width: 100%;
+      padding: 7px 11px;
+      border: 1px solid #d0dcec;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: 0.15s;
+      background: #fff;
+    }
+    .field input:focus {
+      border-color: #2b7bb6;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(43, 123, 182, 0.12);
+    }
+    .field input:read-only {
+      background: #f5f7fa;
+      color: #555;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .sum-block {
+      background: #f8faff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-top: 14px;
+    }
+    .sum-block .line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      padding: 3px 0;
+    }
+    .sum-block .line.total {
+      font-size: 18px;
+      font-weight: 700;
       color: #003366;
-      margin-bottom: 6px;
+      border-top: 2px solid #e6f0fa;
+      padding-top: 8px;
+      margin-top: 4px;
     }
-    .contacts a {
-      color: #003366;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .contacts a:hover {
-      text-decoration: underline;
-    }
-    .footer-note {
-      margin-top: 20px;
+    .sum-block .num2text {
+      text-align: right;
       font-size: 13px;
-      color: #557a9a;
+      color: #1a3a5f;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .preview-panel {
+      background: #fff;
+      border-radius: 24px;
+      padding: 24px 28px;
+      box-shadow: 0 8px 30px rgba(0, 30, 60, 0.08);
+      max-height: calc(100vh - 150px);
+      overflow-y: auto;
+      position: relative;
+    }
+    .preview-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+    .preview-panel::-webkit-scrollbar-thumb {
+      background: #b6ccdd;
+      border-radius: 10px;
+    }
+
+    .preview-panel .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e6f0fa;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #003366;
+    }
+    .preview-panel .preview-header .badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 12px;
+      border-radius: 40px;
+      background: #e1f3e6;
+      color: #1a6e3a;
+    }
+
+    .contract-preview {
+      font-family: 'Arial Narrow', Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.4;
+      color: #000000;
+      padding: 0;
+      max-width: 100%;
+    }
+    .contract-preview table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px auto;
+      font-size: 10pt;
+    }
+    .contract-preview table td,
+    .contract-preview table th {
+      border: 1px solid #000;
+      padding: 4px 8px;
       text-align: center;
-      border-top: 1px solid #e6edf5;
-      padding-top: 16px;
+    }
+    .contract-preview table td:first-child,
+    .contract-preview table th:first-child {
+      width: 40px;
+    }
+    .contract-preview table td:nth-child(2) {
+      text-align: left;
+    }
+    .contract-preview table td:last-child,
+    .contract-preview table th:last-child {
+      text-align: right;
+    }
+    .contract-preview ul {
+      padding-left: 25px;
+      margin: 4px 0;
+    }
+    .contract-preview .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+      gap: 40px;
+    }
+    .contract-preview .signatures .sig-block {
+      flex: 1;
+      min-width: 200px;
+    }
+    .contract-preview .signatures .sig-block .underline {
+      border-bottom: 1px solid #000;
+      width: 100%;
+      display: block;
+      margin-top: 4px;
+    }
+    .contract-preview .center {
+      text-align: center;
+    }
+    .contract-preview .bold {
+      font-weight: bold;
+    }
+    .contract-preview .flex-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 6px 0;
+    }
+    .contract-preview .right {
+      text-align: right;
+    }
+    .contract-preview .left {
+      text-align: left;
+    }
+    .contract-preview p {
+      margin: 6px 0;
+      text-align: justify;
+      text-indent: 1.25cm;
+    }
+    .contract-preview p.no-indent {
+      text-indent: 0;
+    }
+    .contract-preview .section-title {
+      font-weight: bold;
+      text-align: center;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-size: 12pt;
+    }
+    .contract-preview .page-break {
+      page-break-before: always;
+      margin-top: 30px;
+      border-top: 1px dashed #ccc;
+      padding-top: 20px;
+    }
+    .contract-preview .appendix-header {
+      text-align: right;
+      font-weight: bold;
     }
 
     @media print {
-      body { background: #fff; padding: 0.2in; }
-      .card { box-shadow: none; border: 1px solid #ccc; border-radius: 12px; padding: 24px; }
-      .print-btn { display: none !important; }
-      .checklist-item input[type="checkbox"] { accent-color: #003366; }
+      body {
+        background: #fff;
+        padding: 0.3in;
+        margin: 0;
+      }
+      .form-panel {
+        display: none !important;
+      }
+      .preview-panel {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: transparent !important;
+      }
+      .preview-panel .preview-header {
+        display: none !important;
+      }
+      .btn-group {
+        display: none !important;
+      }
+      .grid-2 {
+        display: block !important;
+      }
+      .container {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .header {
+        display: none !important;
+      }
+      .contract-preview {
+        font-size: 11pt !important;
+      }
+      .contract-preview .page-break {
+        border-top: none !important;
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+        page-break-before: always;
+      }
+      .contract-preview table tr {
+        background-color: transparent !important;
+      }
     }
 
-    @media (max-width: 500px) {
-      .card { padding: 20px; }
-      h1 { font-size: 20px; }
-      .checklist-item label { font-size: 15px; }
-      .print-btn { top: 14px; right: 16px; font-size: 12px; padding: 4px 12px; }
+    @media (max-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .form-panel,
+      .preview-panel {
+        max-height: none;
+      }
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+      .header h1 {
+        font-size: 20px;
+        flex-wrap: wrap;
+      }
+      .contract-preview .signatures {
+        flex-direction: column;
+        gap: 20px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="card">
 
-  <!-- КНОПКА ПЕЧАТИ -->
-  <button class="print-btn" onclick="window.print()">🖨️ Печать</button>
+  <div class="container">
 
-  <h1>📋 Чек-лист: как завершить СОУТ</h1>
-  <div class="sub">
-    ✅ Отмечайте прогресс завершения СОУТ
+    <div class="header">
+      <h1>📄 Конструктор договора на СОУТ <small>заполните поля → готовый договор</small></h1>
+      <div class="header-actions">
+        <button class="btn btn-primary" id="updateBtn">🔄 Обновить</button>
+        <button class="btn btn-success" id="printBtn">🖨️ Печать</button>
+        <button class="btn btn-word" id="wordBtn">📥 Сохранить в Word</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+
+      <div class="form-panel">
+        <h2>📝 Данные для договора</h2>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Номер договора</label>
+            <input type="text" id="contractNumber" value="П-1055/СОУТ" />
+          </div>
+          <div class="field">
+            <label>Дата договора</label>
+            <input type="date" id="contractDate" />
+          </div>
+        </div>
+
+        <hr style="border: none; border-top: 2px solid #e6f0fa; margin: 14px 0;" />
+
+        <div class="field" style="background: #f0f7fe; border-radius: 8px; padding: 10px 12px;">
+          <label style="color: #003366; font-weight: 700;">🔍 Загрузка по ИНН</label>
+          <div class="field-row" style="gap: 8px;">
+            <input type="text" id="innSearch" placeholder="Введите ИНН" style="flex:1;" />
+            <button class="btn btn-primary" id="loadInnBtn" style="padding: 6px 16px; font-size: 13px;">Загрузить</button>
+          </div>
+        </div>
+
+        <hr style="border: none; border-top: 2px solid #e6f0fa; margin: 14px 0;" />
+
+        <div class="field">
+          <label>Организационно-правовая форма (полная)</label>
+          <input type="text" id="clientOpf" placeholder="Заполняется автоматически" readonly style="background:#f5f7fa;" />
+          <div style="font-size:11px; color:#6f8aa8; margin-top:2px;">📌 Загружается вместе с реквизитами по ИНН</div>
+        </div>
+
+        <div class="field">
+          <label>Организационно-правовая форма (краткая)</label>
+          <input type="text" id="clientOpfShort" placeholder="Заполняется автоматически" readonly style="background:#f5f7fa;" />
+          <div style="font-size:11px; color:#6f8aa8; margin-top:2px;">📌 Используется для сокращённого наименования</div>
+        </div>
+
+        <div class="field">
+          <label>Наименование Заказчика</label>
+          <input type="text" id="clientName" placeholder="Например: «СФЕРА-МЕД»" />
+        </div>
+        <div class="field">
+          <label>Юридический адрес</label>
+          <input type="text" id="clientAddress" placeholder="Например: г. Санкт-Петербург, наб. Чёрной речки, д. 41" />
+        </div>
+        <div class="field-row">
+          <div class="field"><label>ИНН</label><input type="text" id="clientInn" placeholder="0000000000" /></div>
+          <div class="field"><label>КПП</label><input type="text" id="clientKpp" placeholder="000000000" /></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>ОГРН</label><input type="text" id="clientOgrn" placeholder="0000000000000" /></div>
+          <div class="field"><label>ОКПО</label><input type="text" id="clientOkpo" placeholder="00000000" /></div>
+        </div>
+        <div class="field">
+          <label>Руководитель (должность + ФИО)</label>
+          <input type="text" id="clientDirector" placeholder="Например: Генеральный директор Иванов Иван Иванович" value="Генеральный директор Иванов Иван Иванович" />
+        </div>
+
+        <hr style="border: none; border-top: 2px solid #e6f0fa; margin: 14px 0;" />
+
+        <div class="field" style="background: #f0f7fe; border-radius: 8px; padding: 10px 12px;">
+          <label style="color: #003366; font-weight: 700;">🏦 Банковские реквизиты</label>
+          <div class="field-row" style="gap: 8px;">
+            <input type="text" id="bankSearch" placeholder="Введите БИК или название банка" style="flex:1;" />
+            <button class="btn btn-primary" id="loadBankBtn" style="padding: 6px 16px; font-size: 13px;">Найти банк</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Банк и номер счёта</label>
+          <input type="text" id="clientBank" placeholder="Например: р/с 407028... в ПАО «МТС-Банк»" />
+        </div>
+        <div class="field-row">
+          <div class="field"><label>р/с</label><input type="text" id="clientRs" placeholder="40702810900000056544" /></div>
+          <div class="field"><label>к/с</label><input type="text" id="clientKs" placeholder="30101810600000000232" /></div>
+        </div>
+        <div class="field">
+          <label>БИК</label>
+          <input type="text" id="clientBik" placeholder="044525232" />
+        </div>
+
+        <hr style="border: none; border-top: 2px solid #e6f0fa; margin: 14px 0;" />
+
+        <div class="field-row">
+          <div class="field">
+            <label>Кол-во рабочих мест</label>
+            <input type="number" id="workplaces" value="10" min="1" />
+          </div>
+          <div class="field">
+            <label>Цена за 1 место (руб.) <span style="font-size:11px; color:#555;">(включая НДС)</span></label>
+            <input type="number" id="pricePerPlace" value="1200" min="0" step="100" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Ставка НДС (%)</label>
+          <input type="number" id="ndsRate" value="5" min="0" max="20" step="0.5" />
+          <div style="font-size:11px; color:#6f8aa8; margin-top:2px;">НДС выделяется из стоимости, а не прибавляется сверху</div>
+        </div>
+
+        <div class="sum-block">
+          <div class="line"><span>Стоимость с НДС:</span><strong id="totalWithNds">12 000 ₽</strong></div>
+          <div class="line" style="color:#555;"><span>НДС (5% от стоимости):</span><strong id="totalNds">571 ₽</strong></div>
+          <div class="line total"><span>Стоимость без НДС:</span><span id="totalWithoutNds">11 429 ₽</span></div>
+          <div class="num2text" id="totalWords">Двенадцать тысяч рублей 00 копеек</div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" id="updateBtn2">🔄 Обновить договор</button>
+          <button class="btn btn-success" id="printBtn2">🖨️ Печать</button>
+          <button class="btn btn-word" id="wordBtn2">📥 Сохранить в Word</button>
+        </div>
+      </div>
+
+      <div class="preview-panel">
+        <div class="preview-header">
+          <span>📄 Превью договора</span>
+          <span class="badge">Автообновление</span>
+        </div>
+        <div id="contractPreview" class="contract-preview">
+          <!-- Сгенерированный договор -->
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div id="checklistContainer">
-    <div class="checklist-item">
-      <input type="checkbox" id="chk1">
-      <label for="chk1"><strong>Утвердить</strong> отчёт о проведении СОУТ</label>
-    </div>
-    <div class="checklist-item">
-      <input type="checkbox" id="chk2">
-      <label for="chk2"><strong>Подписать титульный лист</strong> и направить исполнителю на электронную почту для выгрузки <strong>во ФГИС СОУТ</strong> (в течение 3 рабочих дней)</label>
-    </div>
-    <div class="checklist-item">
-      <input type="checkbox" id="chk3">
-      <label for="chk3">Подать <strong>декларацию соответствия</strong> (если установлен 1 или 2 класс условий труда)</label>
-    </div>
-    <div class="checklist-item">
-      <input type="checkbox" id="chk4">
-      <label for="chk4"><strong>Ознакомить</strong> каждого сотрудника с картой СОУТ под подпись (в течение 30 календарных дней)</label>
-    </div>
-    <div class="checklist-item">
-      <input type="checkbox" id="chk5">
-      <label for="chk5">Опубликовать <strong>сводную ведомость</strong> на сайте организации (при наличии сайта)</label>
-    </div>
-  </div>
+  <script>
+    // =============================================
+    // 1. НАШИ РЕКВИЗИТЫ (ИСПОЛНИТЕЛЬ)
+    // =============================================
+    const executor = {
+      fullName: 'Общество с ограниченной ответственностью «ЭкоЛаб-Эксперт»',
+      shortName: 'ООО «ЭкоЛаб-Эксперт»',
+      inn: '7816309879',
+      kpp: '783901001',
+      ogrn: '1157847410600',
+      okpo: '31988075',
+      address: '190020, г. Санкт-Петербург, ул. Бумажная, д.17, лит.А, оф.416',
+      director: 'Генеральный директор Журилова Александра Андреевна',
+      bank: 'р/с 40702810410000626876 в АО «ТБанк»',
+      rs: '40702810410000626876',
+      ks: '30101810145250000974',
+      bik: '044525974'
+    };
 
-  <div class="progress-text" id="progressText">0 / 5</div>
-  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    // =============================================
+    // 2. ФУНКЦИЯ ПРОПИСЬЮ (именительный падеж)
+    // =============================================
+    function numToWords(num, female) {
+      if (num === 0) return 'ноль';
+      const units = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+      const unitsF = ['', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+      const teens = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать',
+        'семнадцать', 'восемнадцать', 'девятнадцать'
+      ];
+      const tens = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят',
+        'девяносто'
+      ];
+      const hundreds = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот',
+        'девятьсот'
+      ];
 
-  <!-- Контакты -->
-  <div class="contacts">
-    <p>📞 По всем вопросам, связанным с СОУТ, обращайтесь:</p>
-    <div>
-      ☎️ <a href="tel:+78129881640">+7 (812) 988-16-40</a> &nbsp;|&nbsp;
-      ✉️ <a href="mailto:ot@trud-ps.ru">ot@trud-ps.ru</a>
-    </div>
-  </div>
-
-  <div class="footer-note">
-    💡 Данный чек-лист сохраняется в браузере, данные остаются только у Вас и помогают завершить процедуру оценки мест.
-  </div>
-</div>
-
-<script>
-  (function() {
-    const checkboxes = document.querySelectorAll('#checklistContainer input[type="checkbox"]');
-    const progressText = document.getElementById('progressText');
-    const progressBar = document.getElementById('progressBar');
-
-    function updateProgress() {
-      const total = checkboxes.length;
-      const checked = document.querySelectorAll('#checklistContainer input[type="checkbox"]:checked').length;
-      progressText.textContent = `${checked} / ${total}`;
-      const percent = (checked / total) * 100;
-      progressBar.style.width = percent + '%';
-
-      checkboxes.forEach(cb => {
-        const item = cb.closest('.checklist-item');
-        if (cb.checked) {
-          item.classList.add('done');
-        } else {
-          item.classList.remove('done');
+      function chunk(n, female) {
+        let s = '';
+        const h = Math.floor(n / 100);
+        const t = Math.floor((n % 100) / 10);
+        const u = n % 10;
+        if (h) s += hundreds[h] + ' ';
+        if (t === 1) s += teens[u] + ' ';
+        else {
+          if (t > 1) s += tens[t] + ' ';
+          if (u) s += (female ? unitsF[u] : units[u]) + ' ';
         }
-      });
-
-      const states = Array.from(checkboxes).map(cb => cb.checked);
-      localStorage.setItem('sout_checklist_states', JSON.stringify(states));
-    }
-
-    function loadState() {
-      const saved = localStorage.getItem('sout_checklist_states');
-      if (saved) {
-        const states = JSON.parse(saved);
-        checkboxes.forEach((cb, index) => {
-          if (states[index]) {
-            cb.checked = true;
-          } else {
-            cb.checked = false;
-          }
-        });
-        updateProgress();
+        return s.trim();
       }
+
+      let s = String(Math.round(num));
+      let chunks = [];
+      while (s.length) { chunks.push(parseInt(s.slice(-3)));
+        s = s.slice(0, -3); }
+      chunks.reverse();
+      const names = [
+        { name: '', female: false },
+        { name: 'тысяча', female: true },
+        { name: 'миллион', female: false },
+        { name: 'миллиард', female: false }
+      ];
+      let result = '';
+      for (let i = 0; i < chunks.length; i++) {
+        const c = chunks[i];
+        if (!c) continue;
+        const idx = chunks.length - 1 - i;
+        const n = names[idx] || { name: '', female: false };
+        let part = chunk(c, n.female);
+        if (n.name) {
+          if (n.name === 'тысяча') {
+            if (c === 1) part += ' тысяча';
+            else if (c >= 2 && c <= 4) part += ' тысячи';
+            else part += ' тысяч';
+          } else {
+            if (c === 1) part += ' ' + n.name;
+            else if (c >= 2 && c <= 4) part += ' ' + n.name + 'а';
+            else part += ' ' + n.name + 'ов';
+          }
+        }
+        result += part + ' ';
+      }
+      return result.trim() || 'ноль';
     }
 
-    checkboxes.forEach(cb => {
-      cb.addEventListener('change', updateProgress);
+    // =============================================
+    // 3. ЧИСЛО ПРОПИСЬЮ В РОДИТЕЛЬНОМ ПАДЕЖЕ
+    // =============================================
+    function numToWordsGenitive(num) {
+      if (num === 0) return 'ноля';
+      // Используем массивы для родительного падежа
+      const unitsGen = ['', 'одного', 'двух', 'трёх', 'четырёх', 'пяти', 'шести', 'семи', 'восьми', 'девяти'];
+      const unitsFGen = ['', 'одной', 'двух', 'трёх', 'четырёх', 'пяти', 'шести', 'семи', 'восьми', 'девяти'];
+      const teensGen = ['десяти', 'одиннадцати', 'двенадцати', 'тринадцати', 'четырнадцати', 'пятнадцати', 'шестнадцати',
+        'семнадцати', 'восемнадцати', 'девятнадцати'
+      ];
+      const tensGen = ['', '', 'двадцати', 'тридцати', 'сорока', 'пятидесяти', 'шестидесяти', 'семидесяти', 'восьмидесяти',
+        'девяноста'
+      ];
+      const hundredsGen = ['', 'ста', 'двухсот', 'трёхсот', 'четырёхсот', 'пятисот', 'шестисот', 'семисот', 'восьмисот',
+        'девятисот'
+      ];
+
+      function chunkGen(n, female) {
+        let s = '';
+        const h = Math.floor(n / 100);
+        const t = Math.floor((n % 100) / 10);
+        const u = n % 10;
+        if (h) s += hundredsGen[h] + ' ';
+        if (t === 1) s += teensGen[u] + ' ';
+        else {
+          if (t > 1) s += tensGen[t] + ' ';
+          if (u) s += (female ? unitsFGen[u] : unitsGen[u]) + ' ';
+        }
+        return s.trim();
+      }
+
+      let s = String(Math.round(num));
+      let chunks = [];
+      while (s.length) { chunks.push(parseInt(s.slice(-3)));
+        s = s.slice(0, -3); }
+      chunks.reverse();
+      const names = [
+        { name: '', female: false },
+        { name: 'тысячи', female: true },
+        { name: 'миллионов', female: false },
+        { name: 'миллиардов', female: false }
+      ];
+      let result = '';
+      for (let i = 0; i < chunks.length; i++) {
+        const c = chunks[i];
+        if (!c) continue;
+        const idx = chunks.length - 1 - i;
+        const n = names[idx] || { name: '', female: false };
+        let part = chunkGen(c, n.female);
+        if (n.name) {
+          if (n.name === 'тысячи') {
+            if (c === 1) part += ' тысяча';
+            else if (c >= 2 && c <= 4) part += ' тысячи';
+            else part += ' тысяч';
+          } else {
+            // для родительного падежа названия разрядов: миллионов, миллиардов и т.д.
+            if (c === 1) part += ' ' + n.name; // уже в родительном
+            else if (c >= 2 && c <= 4) part += ' ' + n.name;
+            else part += ' ' + n.name;
+          }
+        }
+        result += part + ' ';
+      }
+      return result.trim() || 'ноля';
+    }
+
+    function rublesToWords(amount) {
+      const rub = Math.floor(amount);
+      const kop = Math.round((amount - rub) * 100);
+      let r = numToWords(rub);
+      if (!r) r = 'ноль';
+      const last = rub % 10;
+      const preLast = Math.floor((rub % 100) / 10);
+      let rubWord = 'рублей';
+      if (preLast !== 1) {
+        if (last === 1) rubWord = 'рубль';
+        else if (last >= 2 && last <= 4) rubWord = 'рубля';
+      }
+      return r + ' ' + rubWord + ' ' + String(kop).padStart(2, '0') + ' копеек';
+    }
+
+    function workplacesDeclension(num) {
+      const last = num % 10;
+      const preLast = Math.floor((num % 100) / 10);
+      if (preLast === 1) return 'рабочих мест';
+      if (last === 1) return 'рабочее место';
+      if (last >= 2 && last <= 4) return 'рабочих места';
+      return 'рабочих мест';
+    }
+
+    // =============================================
+    // 4. СКЛОНЕНИЕ ФИО В РОДИТЕЛЬНЫЙ ПАДЕЖ
+    // =============================================
+    function declineFIO(director) {
+      const parts = director.trim().split(' ');
+      if (parts.length < 2) return director;
+
+      let positionEnd = 0;
+      const positionWords = ['генеральный', 'исполнительный', 'финансовый', 'коммерческий', 'технический', 'директор', 'президент', 'председатель', 'руководитель', 'начальник', 'заместитель', 'зам.'];
+      
+      for (let i = 0; i < parts.length; i++) {
+        if (positionWords.includes(parts[i].toLowerCase())) {
+          positionEnd = i + 1;
+        } else {
+          break;
+        }
+      }
+      
+      if (positionEnd === 0) positionEnd = 1;
+      
+      const position = parts.slice(0, positionEnd).join(' ');
+      const nameParts = parts.slice(positionEnd);
+      
+      if (nameParts.length < 1) return director;
+
+      let declinedPosition = position;
+      const posLower = position.toLowerCase();
+      if (posLower.includes('генеральный директор')) {
+        declinedPosition = 'Генерального директора';
+      } else if (posLower.includes('исполнительный директор')) {
+        declinedPosition = 'Исполнительного директора';
+      } else if (posLower.includes('финансовый директор')) {
+        declinedPosition = 'Финансового директора';
+      } else if (posLower.includes('коммерческий директор')) {
+        declinedPosition = 'Коммерческого директора';
+      } else if (posLower.includes('технический директор')) {
+        declinedPosition = 'Технического директора';
+      } else if (posLower.includes('директор')) {
+        declinedPosition = 'Директора';
+      } else if (posLower.includes('генеральный')) {
+        declinedPosition = 'Генерального';
+      }
+
+      let declinedName = '';
+      if (nameParts.length === 3) {
+        const lastName = nameParts[0];
+        const firstName = nameParts[1];
+        const middleName = nameParts[2];
+        let declinedLastName = lastName;
+        if (lastName.endsWith('ий')) {
+          declinedLastName = lastName.slice(0, -2) + 'ого';
+        } else if (lastName.endsWith('ой')) {
+          declinedLastName = lastName.slice(0, -2) + 'ого';
+        } else if (lastName.endsWith('а')) {
+          declinedLastName = lastName.slice(0, -1) + 'ы';
+        } else if (lastName.endsWith('я')) {
+          declinedLastName = lastName.slice(0, -1) + 'и';
+        } else if (lastName.endsWith('ь')) {
+          declinedLastName = lastName.slice(0, -1) + 'я';
+        } else if (lastName.endsWith('й')) {
+          declinedLastName = lastName.slice(0, -1) + 'я';
+        } else if (lastName.endsWith('ов') || lastName.endsWith('ев') || lastName.endsWith('ин')) {
+          declinedLastName = lastName + 'а';
+        } else {
+          declinedLastName = lastName + 'а';
+        }
+        let declinedFirstName = firstName;
+        if (firstName.endsWith('а')) {
+          declinedFirstName = firstName.slice(0, -1) + 'ы';
+        } else if (firstName.endsWith('й') || firstName.endsWith('ь')) {
+          declinedFirstName = firstName.slice(0, -1) + 'я';
+        } else {
+          declinedFirstName = firstName + 'а';
+        }
+        let declinedMiddleName = middleName;
+        if (middleName.endsWith('а')) {
+          declinedMiddleName = middleName.slice(0, -1) + 'ы';
+        } else if (middleName.endsWith('й') || middleName.endsWith('ь')) {
+          declinedMiddleName = middleName.slice(0, -1) + 'я';
+        } else if (middleName.endsWith('на')) {
+          declinedMiddleName = middleName.slice(0, -2) + 'ны';
+        } else if (middleName.endsWith('вич')) {
+          declinedMiddleName = middleName + 'а';
+        } else if (middleName.endsWith('вна')) {
+          declinedMiddleName = middleName.slice(0, -2) + 'ны';
+        } else {
+          declinedMiddleName = middleName + 'а';
+        }
+        declinedName = `${declinedLastName} ${declinedFirstName} ${declinedMiddleName}`;
+      } else if (nameParts.length === 2) {
+        const lastName = nameParts[0];
+        const firstName = nameParts[1];
+        let declinedLastName = lastName;
+        if (lastName.endsWith('ий')) {
+          declinedLastName = lastName.slice(0, -2) + 'ого';
+        } else if (lastName.endsWith('ой')) {
+          declinedLastName = lastName.slice(0, -2) + 'ого';
+        } else if (lastName.endsWith('а')) {
+          declinedLastName = lastName.slice(0, -1) + 'ы';
+        } else if (lastName.endsWith('я')) {
+          declinedLastName = lastName.slice(0, -1) + 'и';
+        } else if (lastName.endsWith('ь')) {
+          declinedLastName = lastName.slice(0, -1) + 'я';
+        } else if (lastName.endsWith('й')) {
+          declinedLastName = lastName.slice(0, -1) + 'я';
+        } else {
+          declinedLastName = lastName + 'а';
+        }
+        let declinedFirstName = firstName;
+        if (firstName.endsWith('а')) {
+          declinedFirstName = firstName.slice(0, -1) + 'ы';
+        } else if (firstName.endsWith('й') || firstName.endsWith('ь')) {
+          declinedFirstName = firstName.slice(0, -1) + 'я';
+        } else {
+          declinedFirstName = firstName + 'а';
+        }
+        declinedName = `${declinedLastName} ${declinedFirstName}`;
+      } else {
+        declinedName = nameParts.join(' ');
+      }
+
+      return `${declinedPosition} ${declinedName}`;
+    }
+
+    // =============================================
+    // 5. ФОРМАТИРОВАНИЕ ДОЛЖНОСТИ (именительный падеж, не капсом)
+    // =============================================
+    function formatDirectorPosition(director) {
+      const parts = director.trim().split(' ');
+      if (parts.length < 1) return director;
+
+      const positionWords = ['генеральный', 'исполнительный', 'финансовый', 'коммерческий', 'технический', 'директор', 'президент', 'председатель', 'руководитель', 'начальник', 'заместитель', 'зам.'];
+      let positionEnd = 0;
+      for (let i = 0; i < parts.length; i++) {
+        if (positionWords.includes(parts[i].toLowerCase())) {
+          positionEnd = i + 1;
+        } else {
+          break;
+        }
+      }
+      if (positionEnd === 0) positionEnd = 1;
+
+      const position = parts.slice(0, positionEnd).join(' ');
+      const name = parts.slice(positionEnd).join(' ');
+
+      const formattedPosition = position.split(' ').map(word => {
+        if (word.length === 0) return word;
+        if (word === word.toUpperCase()) {
+          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }).join(' ');
+
+      return `${formattedPosition} ${name}`;
+    }
+
+    // =============================================
+    // 6. ОПРЕДЕЛЕНИЕ РОДА ПО ФАМИЛИИ
+    // =============================================
+    function getGender(director) {
+      const parts = director.trim().split(' ');
+      let nameStart = 0;
+      const positionWords = ['генеральный', 'исполнительный', 'финансовый', 'коммерческий', 'технический', 'директор', 'президент', 'председатель', 'руководитель', 'начальник', 'заместитель', 'зам.'];
+      for (let i = 0; i < parts.length; i++) {
+        if (positionWords.includes(parts[i].toLowerCase())) {
+          nameStart = i + 1;
+        } else {
+          break;
+        }
+      }
+      if (nameStart >= parts.length) return 'male';
+      const lastName = parts[nameStart];
+      if (!lastName) return 'male';
+      const lastChar = lastName.slice(-1);
+      if (lastChar === 'а' || lastChar === 'я') {
+        return 'female';
+      }
+      return 'male';
+    }
+
+    // =============================================
+    // 7. ГЕНЕРАЦИЯ ДОГОВОРА
+    // =============================================
+    function generateContractHTML() {
+      const number = document.getElementById('contractNumber').value || 'П-1055/СОУТ';
+      const dateRaw = document.getElementById('contractDate').value;
+      let dateFormatted = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+      if (dateRaw) {
+        const d = new Date(dateRaw);
+        dateFormatted = `${d.getDate()} ${d.toLocaleDateString('ru-RU', { month: 'long' })} ${d.getFullYear()} г.`;
+      }
+
+      const clientOpf = document.getElementById('clientOpf').value || '';
+      const clientOpfShort = document.getElementById('clientOpfShort').value || '';
+      const clientName = document.getElementById('clientName').value || '«КИБО»';
+      const cleanName = clientName.replace(/^«|»$/g, '').trim();
+      
+      // Полное название с ОПФ (для первого упоминания)
+      const clientFullName = clientOpf ? `${clientOpf} «${cleanName}»` : `«${cleanName}»`;
+      // Сокращённое название (ООО «КИБО») – используется в преамбуле, 11.1 и приложении
+      const clientShortWithOpf = clientOpfShort ? `${clientOpfShort} «${cleanName}»` : `«${cleanName}»`;
+      
+      const clientAddress = document.getElementById('clientAddress').value || 'г. Москва, ул. Примерная, д. 1';
+      const clientInn = document.getElementById('clientInn').value || '0000000000';
+      const clientKpp = document.getElementById('clientKpp').value || '000000000';
+      const clientOgrn = document.getElementById('clientOgrn').value || '0000000000000';
+      const clientOkpo = document.getElementById('clientOkpo').value || '00000000';
+      const clientDirectorRaw = document.getElementById('clientDirector').value || 'Генеральный директор Иванов Иван Иванович';
+      
+      const clientDirectorNominative = formatDirectorPosition(clientDirectorRaw);
+      const clientDirectorGenitive = declineFIO(clientDirectorRaw);
+      const clientGender = getGender(clientDirectorRaw);
+      const clientActing = clientGender === 'female' ? 'действующей' : 'действующего';
+
+      const executorDirectorGenitive = declineFIO(executor.director);
+      const executorGender = getGender(executor.director);
+      const executorActing = executorGender === 'female' ? 'действующей' : 'действующего';
+
+      const clientBank = document.getElementById('clientBank').value || 'р/с 00000000000000000000 в АО «Банк»';
+      const clientRs = document.getElementById('clientRs').value || '40702810000000000000';
+      const clientKs = document.getElementById('clientKs').value || '30101810100000000000';
+      const clientBik = document.getElementById('clientBik').value || '044525000';
+
+      const workplaces = parseInt(document.getElementById('workplaces').value) || 10;
+      const priceWithNds = parseFloat(document.getElementById('pricePerPlace').value) || 1200;
+      const ndsRate = parseFloat(document.getElementById('ndsRate').value) || 5;
+
+      const ndsAmount = priceWithNds * (ndsRate / (100 + ndsRate));
+      const priceWithoutNds = priceWithNds - ndsAmount;
+
+      const totalWithNds = workplaces * priceWithNds;
+      const totalNds = workplaces * ndsAmount;
+      const totalWithoutNds = workplaces * priceWithoutNds;
+
+      document.getElementById('totalWithNds').textContent = totalWithNds.toLocaleString('ru-RU') + ' ₽';
+      document.getElementById('totalNds').textContent = Math.round(totalNds).toLocaleString('ru-RU') + ' ₽';
+      document.getElementById('totalWithoutNds').textContent = Math.round(totalWithoutNds).toLocaleString('ru-RU') + ' ₽';
+      document.getElementById('totalWords').textContent = rublesToWords(totalWithNds);
+
+      const priceWords = numToWords(priceWithoutNds);
+      const workplacesWords = numToWords(workplaces);
+      const workplacesWordsGenitive = numToWordsGenitive(workplaces);
+      const workplacesDecl = workplacesDeclension(workplaces);
+
+      const rub = Math.floor(totalWithNds);
+      const kop = Math.round((totalWithNds - rub) * 100);
+      const totalRubWords = numToWords(rub);
+      const totalRubWord = (() => {
+        const last = rub % 10;
+        const preLast = Math.floor((rub % 100) / 10);
+        if (preLast === 1) return 'рублей';
+        if (last === 1) return 'рубль';
+        if (last >= 2 && last <= 4) return 'рубля';
+        return 'рублей';
+      })();
+
+      const totalWithKop = `${totalWithNds.toLocaleString('ru-RU')} (${totalRubWords} ${totalRubWord}) ${String(kop).padStart(2, '0')} копеек`;
+
+      const isIP = clientFullName.toUpperCase().includes('ИП') || clientFullName.toUpperCase().includes('ИНДИВИДУАЛЬНЫЙ ПРЕДПРИНИМАТЕЛЬ');
+      const ogrnLabel = isIP ? 'ОГРНИП' : 'ОГРН';
+
+      const tableHTML = `
+      <table>
+        <tr>
+          <th>№</th>
+          <th>Наименование услуг по настоящему договору</th>
+          <th>Кол-во</th>
+          <th>Ед.</th>
+          <th>Цена, в т.ч. НДС</th>
+          <th>Сумма, в т.ч. НДС</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Специальная оценка условий труда</td>
+          <td>${workplaces}</td>
+          <td>Раб. мест</td>
+          <td>${priceWithNds.toLocaleString('ru-RU')}</td>
+          <td>${totalWithNds.toLocaleString('ru-RU')}</td>
+        </tr>
+      </table>
+      `;
+
+      const signaturesHTML = `
+      <div class="signatures">
+        <div class="sig-block">
+          <div style="font-weight: normal; margin-bottom: 2px;">Заказчик:</div>
+          <div style="font-weight: normal; margin-bottom: 2px;">${clientDirectorNominative}</div>
+          <br><br>
+          <div class="underline"></div>
+        </div>
+        <div class="sig-block">
+          <div style="font-weight: normal; margin-bottom: 2px;">Исполнитель:</div>
+          <div style="font-weight: normal; margin-bottom: 2px;">${executor.director}</div>
+          <br><br>
+          <div class="underline"></div>
+        </div>
+      </div>
+      `;
+
+      // ПРЕАМБУЛА
+      const preamble = `
+        <p class="no-indent">${clientFullName} (далее по тексту ${clientShortWithOpf}), в лице ${clientDirectorGenitive}, ${clientActing} на основании Устава, именуемый в дальнейшем «Заказчик», с одной стороны, и</p>
+        <p class="no-indent">${executor.fullName} (далее по тексту ${executor.shortName}), в лице ${executorDirectorGenitive}, ${executorActing} на основании Устава, именуемое в дальнейшем «ИСПОЛНИТЕЛЬ», с другой стороны, совместно именуемые Стороны, заключили настоящий Договор о нижеследующем:</p>
+      `;
+
+      // ОСНОВНАЯ ЧАСТЬ
+      const mainPart = `
+      <div>
+        <div class="center bold" style="font-size: 13pt;">Договор № ${number}</div>
+        <div class="center bold" style="font-size: 13pt;">на оказание услуг по проведению специальной оценки условий труда</div>
+        <br>
+        <div style="display: flex; justify-content: space-between; margin: 0;">
+          <span>г. Санкт-Петербург</span>
+          <span style="font-weight: bold;">«${dateFormatted}»</span>
+        </div>
+
+        ${preamble}
+
+        <div class="section-title">1. ПРЕДМЕТ ДОГОВОРА</div>
+
+        <p><b>1.1.</b> Заказчик поручает, а ИСПОЛНИТЕЛЬ принимает на себя обязательство по проведению специальной оценки условий труда ${workplaces} (${workplacesWordsGenitive}) ${workplacesDecl}, в объеме, определенном Федеральным законом Российской Федерации от 28 декабря 2013 г. N 426-ФЗ «О специальной оценке условий труда», Приложением №1 к Приказу Министерства труда и социальной защиты Российской Федерации от 21 ноября 2023 г. N 817н «Об утверждении методики проведения специальной оценки условий труда, классификатора вредных и (или) опасных производственных факторов, формы отчета о проведении специальной оценки условий труда и инструкции по ее заполнению».</p>
+
+        <p><b>1.2.</b> Если при проведении специальной оценки условий труда выяснится необходимость корректировки числа оцениваемых рабочих мест, а именно, увеличения или уменьшения количества рабочих мест и, соответственно, изменения стоимости оказываемых услуг, составляется дополнительное соглашение.</p>
+
+        <p><b>1.3.</b> ИСПОЛНИТЕЛЬ гарантирует Заказчику свое соответствие требованиям, установленным ст. 19 Федерального закона от 28.12.2013 № 426-ФЗ «О специальной оценке условий труда».</p>
+
+        <div class="section-title">2. СТОИМОСТЬ УСЛУГ И ПОРЯДОК РАСЧЕТОВ</div>
+
+        <p><b>2.1.</b> Стоимость услуг по специальной оценке условий труда на одном рабочем месте составляет ${priceWithNds.toLocaleString('ru-RU')} (${numToWords(priceWithNds)}) рублей 00 копеек, в т.ч. НДС ${ndsRate}% в соответствии с п.п.1 п.8 ст 164 НК РФ.</p>
+
+        <p><b>2.2.</b> Общая стоимость услуг ИСПОЛНИТЕЛЯ по настоящему Договору, подлежащая уплате Заказчиком в объеме, указанном п. 1.1 настоящего Договора, составляет <b>${totalWithKop}</b>, в т.ч. НДС ${ndsRate}% в соответствии с п.п.1 п.8 ст 164 НК РФ.</p>
+
+        <p><b>2.3.</b> Заказчик в течение 10 (Десяти) рабочих дней с даты подписания Договора и получения счета перечисляет ИСПОЛНИТЕЛЮ авансовый платеж, составляющий 100 % от общей стоимости Договора.</p>
+
+        <div class="section-title">3. ОБЯЗАННОСТИ СТОРОН</div>
+
+        <p><b>3.1.</b> Заказчик обязуется в течение 10 (Десяти) рабочих дней с момента подписания Договора предоставить ИСПОЛНИТЕЛЮ исходные данные и сведения, необходимые для оказания услуг по настоящему Договору:</p>
+        <ul>
+          <li>копию приказа «О порядке проведения специальной оценки условий труда, составе комиссии»;</li>
+          <li>копию штатного расписания, численность работников, информацию о режиме работы на рабочих местах;</li>
+          <li>коды: ИНН, ОКПО, ОКОГУ, ОКВЭД, ОКАТО, ОКТМО;</li>
+          <li>необходимые сведения и документацию (результаты ранее проводившихся исследований, перечень выдаваемых СИЗ, перечень применяемого оборудования, инструмента, сырья и материалов, сведения о предоставлении работникам льгот и компенсаций, сведения о произошедших за последние пять лет несчастных случаях на производстве и о профессиональных заболеваниях занятых на данных рабочих местах).</li>
+        </ul>
+
+        <p><b>3.2.</b> Заказчик обязуется обеспечить ИСПОЛНИТЕЛЮ доступ на территорию объекта с целью оказания услуг по п. 1.1 Договора, с соблюдением установленных и действующих на предприятии порядка. Обеспечить сопровождение сотрудников и ответственных лиц ИСПОЛНИТЕЛЯ на территории организации, где необходимо выполнить работы.</p>
+
+        <p><b>3.3.</b> Заказчик обязуется утвердить перечень рабочих мест, в отношении которых проведена идентификация потенциально вредных и (или) опасных производственных факторов на рабочих местах.</p>
+
+        <p><b>3.4.</b> Заказчик несет ответственность за своевременность предоставления, полноту и достоверность исходных данных, необходимых ИСПОЛНИТЕЛЮ для оказания услуг.</p>
+
+        <p><b>3.5.</b> Заказчик обязуется оплатить услуги в соответствии с разделом 2 настоящего Договора.</p>
+
+        <p><b>3.6.</b> Заказчик обязуется в соответствии с п.5.1 статьи 15 ФЗ № 426 от 28.12.2013 г. в течение 3-х рабочих дней со дня утверждения отчета о проведении СОУТ уведомить, об этом ИСПОЛНИТЕЛЯ, любым доступным способом, обеспечивающим возможность подтверждения факта такого уведомления, а так же направить в адрес ИСПОЛНИТЕЛЯ копию утвержденного отчета о проведении СОУТ.</p>
+
+        <p><b>3.7.</b> ИСПОЛНИТЕЛЬ обязуется оказать услуги по п. 1.1 настоящего Договора в составе:</p>
+        <ul>
+          <li>идентификация потенциально вредных и (или) опасных факторов производственной среды и трудового процесса;</li>
+          <li>исследования (испытания) и измерения вредных и (или) опасных производственных факторов в соответствии с Перечнем подлежащих исследованиям (испытаниям) и измерениям вредных и (или) опасных производственных факторов (Химические, Биологические, Физические, Тяжесть и Напряженность трудового процесса);</li>
+          <li>отнесение условий труда на рабочих местах к классам (подклассам) условий труда по степени вредности или опасности по результатам проведенных исследований (испытаний) и измерений идентифицированных потенциально вредных и (или) опасных факторов производственной среды и трудового процесса;</li>
+          <li>установление работникам предусмотренных Трудовым кодексом Российской Федерации гарантий и компенсаций;</li>
+          <li>оформление результатов специальной оценки условий труда.</li>
+        </ul>
+
+        <p><b>3.8.</b> В случае исключения (приостановления) Исполнителя из Реестра организаций, проводящих специальную оценку условий труда, Исполнитель незамедлительно обязан уведомить об этом Заказчика и приостановить дальнейшее оказание услуг по Договору.</p>
+
+        <p><b>3.9.</b> ИСПОЛНИТЕЛЬ в счет цены Договора обязуется оказать помощь Заказчику в составлении декларации соответствия условий труда государственным нормативным требованиям охраны труда на рабочие места, на которых вредные и (или) опасные производственные факторы по результатам проведения идентификации не выявлены, а также в отношении рабочих мест, условия труда на которых по результатам исследований (испытаний) и измерений вредных и (или) опасных производственных факторов признаны оптимальными или допустимыми, за исключением рабочих мест, указанных в ч. 6 ст. 10 Федерального закона от 28.12.2013 N 426-ФЗ.</p>
+
+        <div class="section-title">4. СРОК ДЕЙСТВИЯ ДОГОВОРА И ОКАЗАНИЯ УСЛУГ</div>
+
+        <p><b>4.1.</b> Настоящий Договор вступает в силу с даты его подписания лицами, уполномоченными Сторонами и завершается по выполнении взаимных обязательств.</p>
+
+        <p><b>4.2.</b> Срок оказания услуг ИСПОЛНИТЕЛЕМ по Договору — не более 30 (тридцати) рабочих дней с момента выполнения Заказчиком обязательств по п. 3.1. настоящего Договора.</p>
+
+        <p><b>4.3.</b> ИСПОЛНИТЕЛЬ оставляет за собой право досрочного оказания услуг по настоящему Договору.</p>
+
+        <div class="section-title">5. ПОРЯДОК СДАЧИ И ПРИЕМКИ УСЛУГ</div>
+
+        <p><b>5.1.</b> Услуги ИСПОЛНИТЕЛЯ считается оказанными после получения Заказчиком полного комплекта документов, определенного Федеральным законом Российской Федерации от 28 декабря 2013 г. N 426-ФЗ «О специальной оценке условий труда», Приложением №1 к Приказу Министерства труда и социальной защиты Российской Федерации от 21 ноября 2023 г. N 817н «Об утверждении методики проведения специальной оценки условий труда, классификатора вредных и (или) опасных производственных факторов, формы отчета о проведении специальной оценки условий труда и инструкции по ее заполнению», оформленных надлежащим образом и содержащих все необходимые сведения.</p>
+
+        <p><b>5.2.</b> Приемка услуг по настоящему Договору оформляется двухсторонним универсальным передаточным документом (УПД), в течение 5 (пяти) рабочих дней с даты получения Заказчиком материалов по проведенной специальной оценки условий труда от ИСПОЛНИТЕЛЯ (по сопроводительной записке ИСПОЛНИТЕЛЯ).</p>
+
+        <p><b>5.3.</b> При неполучении от Заказчика подписанного УПД или мотивированного отказа от их приемки в установленный срок, ИСПОЛНИТЕЛЬ составляет односторонний УПД.</p>
+
+        <p><b>5.4.</b> Дата подписания УПД, считается датой 100% выполнения ИСПОЛНИТЕЛЕМ своих обязательств по настоящему Договору.</p>
+
+        <div class="section-title">6. ОТВЕТСТВЕННОСТЬ СТОРОН</div>
+
+        <p><b>6.1.</b> За невыполнение или ненадлежащее выполнение обязательств по настоящему Договору Стороны несут ответственность в соответствии с условиями настоящего Договора, а в случаях, не предусмотренных им, в соответствии с действующим законодательством Российской Федерации.</p>
+
+        <p><b>6.2.</b> За нарушение работодателем Федерального закона РФ от 28 декабря 2013 г. N 426-ФЗ «О специальной оценке условий труда» в части порядка и правил проведения специальной оценки условий труда, ответственность возлагается на Заказчика.</p>
+
+        <p><b>6.3.</b> За существенное нарушение Заказчиком п. 3.6 настоящего Договора, что явилось единственной причиной привлечения ИСПОЛНИТЕЛЯ к административной ответственности и уплате им административного штрафа, уплаченные штрафные санкции ГИТ ФГИС возмещаются Заказчиком.</p>
+
+        <p><b>6.4.</b> Стороны гарантируют полное соблюдение всех условий обработки, хранения и использования полученных персональных данных, в соответствии с Федеральным Законом «О персональных данных» от 27.07.2006 № 152-ФЗ.</p>
+
+        <p><b>6.5.</b> За нарушение сроков оказания услуг Исполнителем Заказчик вправе потребовать от Исполнителя уплаты штрафной неустойки (пени) в размере 0,1% от стоимости несвоевременно оказанных услуг за каждый день просрочки.</p>
+
+        <div class="section-title">7. РАСТОРЖЕНИЕ ДОГОВОРА</div>
+
+        <p><b>7.1.</b> В случае задержки или отказа Заказчика предоставить необходимую для оказания услуг информацию, ИСПОЛНИТЕЛЬ имеет право на увеличение сроков оказания услуг по настоящему Договору на аналогичное количество дней, либо требовать расторжения Договора в случае, если Заказчик задерживает предоставление необходимой для оказания услуг информации более чем на 10 рабочих дней.</p>
+
+        <p><b>7.2.</b> В случае расторжения Договора, Заказчик оплачивает стоимость фактически оказанных и документально подтвержденных услуг ИСПОЛНИТЕЛЯ по настоящему Договору, за исключением случаев расторжения Договора по основаниям, указанным в п. 7.3 Договора.</p>
+
+        <p><b>7.3.</b> Договор расторгается, если государственными органами принимаются акты, лишающие права ИСПОЛНИТЕЛЯ на оказание услуг.</p>
+
+        <p><b>7.4.</b> В случае расторжения договора по основаниям, указанным в пунктах 7.1. настоящего договора, при расхождении объема оказанных услуг, подтвержденных документально и оплаченной стоимости работ, ИСПОЛНИТЕЛЬ обязан в течение 5 (пяти) рабочих дней возвратить Заказчику все излишне уплаченные суммы на дату расторжения настоящего договора.</p>
+
+        <div class="section-title">8. АРБИТРАЖ</div>
+
+        <p><b>8.1.</b> Все споры, которые могут возникнуть из настоящего Договора или в связи с его исполнением и которые не удалось решить путем переговоров, подлежат разрешению в Арбитражном Суде города Санкт-Петербурга и Ленинградской области. Претензионный порядок обязателен. Срок ответа на претензию 15 рабочих дней с момента ее получения.</p>
+
+        <div class="section-title">9. ПРОЧИЕ УСЛОВИЯ</div>
+
+        <p><b>9.1.</b> Заказчик не вправе уклоняться от рассмотрения представленных ИСПОЛНИТЕЛЕМ материалов.</p>
+
+        <p><b>9.2.</b> Все исправления и дополнения к настоящему Договору будут действительны только в том случае, если они выполнены в письменной форме и подписаны лицами, уполномоченными на то Сторонами.</p>
+
+        <p><b>9.3.</b> Стороны признают равную юридическую силу собственноручной подписи и факсимиле подписи (воспроизведенное механическим способом с использованием клише) в материалах специальной оценки условий труда.</p>
+
+        <p><b>9.4.</b> После получения Заказчиком материалов по проведению специальной оценки условий труда рабочих мест, по сопроводительной записке, при необходимости их корректировки, не связанной с ненадлежащим оказанием ИСПОЛНИТЕЛЕМ услуг, составляется дополнительное соглашение.</p>
+
+        <p><b>9.5.</b> Настоящий Договор составлен в 2 (двух) идентичных экземплярах, имеющих одинаковую юридическую силу, по одному экземпляру для каждой Стороны.</p>
+
+        <p><b>9.6.</b> Отношения между сторонами, не оговоренные в настоящем Договоре, регулируются в соответствии с действующим законодательством РФ.</p>
+
+        <div class="section-title">10. ФОРС-МАЖОР</div>
+
+        <p><b>10.1.</b> Стороны освобождаются от ответственности за неисполнение или ненадлежащее исполнение обязательств по настоящему договору, если это явилось следствием обстоятельств непреодолимой силы, возникших после заключения договора, как то: стихийные бедствия, забастовки, военные действия любого характера, постановления правительства или распоряжения государственных органов, препятствующие выполнению условий настоящего договора.</p>
+
+        <p><b>10.2.</b> Документ, выданный соответствующим компетентным органом, является достаточным подтверждением наличия и продолжительности действия обстоятельств непреодолимой силы.</p>
+
+        <p><b>10.3.</b> Сторона, ссылающаяся на обстоятельства непреодолимой силы, обязана незамедлительно информировать другую сторону о наступлении подобных обстоятельств в письменной форме.</p>
+
+        <div class="section-title">11. ЮРИДИЧЕСКИЕ АДРЕСА И РЕКВИЗИТЫ СТОРОН</div>
+
+        <p><b>11.1. ЗАКАЗЧИК:</b></p>
+        <p>${clientShortWithOpf}</p>
+        <p>ИНН/КПП ${clientInn}/${clientKpp}</p>
+        <p>Юридический/почтовый адрес: ${clientAddress}</p>
+        <p>${clientBank}</p>
+        <p>р/счет ${clientRs}</p>
+        <p>к/с ${clientKs}</p>
+        <p>БИК ${clientBik}</p>
+        <p>${ogrnLabel} ${clientOgrn}</p>
+
+        <p><b>11.2. ИСПОЛНИТЕЛЬ:</b></p>
+        <p>${executor.fullName}</p>
+        <p>ИНН/КПП ${executor.inn}/${executor.kpp}</p>
+        <p>Юридический и почтовый адрес: ${executor.address}</p>
+        <p>${executor.bank}</p>
+        <p>р/с ${executor.rs}</p>
+        <p>к/с ${executor.ks}</p>
+        <p>БИК ${executor.bik}</p>
+        <p>ОГРН ${executor.ogrn}</p>
+        <p>ОКПО ${executor.okpo}</p>
+
+        ${signaturesHTML}
+      </div>
+      `;
+
+      // ПРИЛОЖЕНИЕ
+      const appendixHTML = `
+      <div class="page-break" style="text-align: right;">
+        <div class="bold">ПРИЛОЖЕНИЕ № 1</div>
+        <div class="bold">к договору № ${number}</div>
+        <div class="bold">от «${dateFormatted}»</div>
+
+        <div style="text-align: center; margin-top: 20px;">
+          <p style="margin: 0 0 2px 0;">Перечень услуг, предоставляемых Исполнителем ${executor.fullName},</p>
+          <p style="margin: 0 0 2px 0;">Заказчику: ${clientShortWithOpf}</p>
+          <p style="margin: 0 0 2px 0;">По адресу: ${clientAddress}</p>
+        </div>
+
+        <div class="section-title">СПЕЦИФИКАЦИЯ:</div>
+
+        <div style="display: flex; justify-content: center;">
+          ${tableHTML}
+        </div>
+
+        <p><b>Итого:</b> ${totalWithKop}, в т.ч. НДС ${ndsRate}% в соответствии с п.п.1 п.8 ст 164 НК РФ.</p>
+
+        ${signaturesHTML}
+      </div>
+      `;
+
+      return mainPart + appendixHTML;
+    }
+
+    // =============================================
+    // 8. ОБНОВЛЕНИЕ ПРЕВЬЮ
+    // =============================================
+    function updatePreview() {
+      const fullHTML = generateContractHTML();
+      document.getElementById('contractPreview').innerHTML = fullHTML;
+    }
+
+    // =============================================
+    // 9. ЗАГРУЗКА ПО ИНН (С ОПФ)
+    // =============================================
+    const DADATA_API_KEY = 'f94f4386b5ec6bc654487fc994c0fba0fdad788c';
+
+    document.getElementById('loadInnBtn').addEventListener('click', function() {
+      const inn = document.getElementById('innSearch').value.trim();
+      if (inn.length < 10) {
+        alert('Введите корректный ИНН (10 или 12 цифр)');
+        return;
+      }
+
+      this.disabled = true;
+      this.textContent = 'Загрузка...';
+
+      fetch('https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Token ' + DADATA_API_KEY
+        },
+        body: JSON.stringify({ query: inn, count: 1 })
+      })
+      .then(response => {
+        if (response.status === 403) throw new Error('❌ Неверный API-ключ. Проверьте ключ в личном кабинете dadata.ru');
+        if (response.status === 429) throw new Error('❌ Превышен лимит запросов (10 000 в сутки)');
+        if (!response.ok) throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+        return response.json();
+      })
+      .then(data => {
+        if (data.suggestions && data.suggestions.length > 0) {
+          const org = data.suggestions[0].data;
+          
+          const opf = org.opf || {};
+          document.getElementById('clientOpf').value = opf.full || opf.short || '';
+          document.getElementById('clientOpfShort').value = opf.short || '';
+          
+          const name = org.name || {};
+          document.getElementById('clientName').value = name.short || name.full || '';
+          document.getElementById('clientAddress').value = org.address?.unrestricted_value || '';
+          document.getElementById('clientInn').value = org.inn || '';
+          document.getElementById('clientKpp').value = org.kpp || '';
+          document.getElementById('clientOgrn').value = org.ogrn || '';
+          document.getElementById('clientOkpo').value = org.okpo || '';
+          
+          let director = '';
+          if (org.management) {
+            director = (org.management.post || '') + ' ' + (org.management.name || '');
+          }
+          document.getElementById('clientDirector').value = director.trim() || 'Генеральный директор Иванов Иван Иванович';
+          
+          updatePreview();
+          alert('✅ Данные загружены!');
+        } else {
+          alert('❌ Организация по ИНН ' + inn + ' не найдена');
+        }
+      })
+      .catch(error => { alert(error.message); })
+      .finally(() => {
+        this.disabled = false;
+        this.textContent = 'Загрузить';
+      });
     });
 
-    loadState();
-  })();
-</script>
+    // =============================================
+    // 10. ПОИСК БАНКА
+    // =============================================
+    document.getElementById('loadBankBtn').addEventListener('click', function() {
+      const query = document.getElementById('bankSearch').value.trim();
+      if (query.length < 3) {
+        alert('Введите БИК (9 цифр) или хотя бы 3 символа названия банка');
+        return;
+      }
+
+      this.disabled = true;
+      this.textContent = 'Поиск...';
+
+      fetch('https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/bank', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Token ' + DADATA_API_KEY
+        },
+        body: JSON.stringify({ query: query, count: 1 })
+      })
+      .then(response => {
+        if (response.status === 403) throw new Error('❌ Неверный API-ключ. Проверьте ключ в личном кабинете dadata.ru');
+        if (!response.ok) throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Ответ DaData (банк):', data);
+        if (data.suggestions && data.suggestions.length > 0) {
+          const bank = data.suggestions[0].data;
+          const bankName = bank.name?.p || bank.name?.c || bank.name?.s || bank.name?.full || 'Неизвестный банк';
+          document.getElementById('clientBank').value = 'р/с 407028' + (bank.bic || '') + ' в ' + bankName;
+          document.getElementById('clientBik').value = bank.bic || '';
+          document.getElementById('clientKs').value = '301018' + (bank.bic ? bank.bic.slice(0, 5) : '') + '0000000';
+          updatePreview();
+          alert('✅ Банк найден!');
+        } else {
+          alert('❌ Банк по запросу "' + query + '" не найден');
+        }
+      })
+      .catch(error => { alert(error.message); })
+      .finally(() => {
+        this.disabled = false;
+        this.textContent = 'Найти банк';
+      });
+    });
+
+    // =============================================
+    // 11. ЭКСПОРТ В WORD
+    // =============================================
+    function exportToWord() {
+      const clientOpfShort = document.getElementById('clientOpfShort').value || '';
+      const clientName = document.getElementById('clientName').value || 'КИБО';
+      const cleanName = clientName.replace(/^«|»$/g, '').trim();
+      const shortName = clientOpfShort ? `${clientOpfShort} ${cleanName}` : cleanName;
+      const number = document.getElementById('contractNumber').value || 'П-0000/СОУТ';
+      const cleanNumber = number.replace(/[\/\s]/g, '');
+      const fileName = `СОУТ_${shortName}_${cleanNumber}.doc`;
+      
+      const html = generateContractHTML();
+      const fullHtml = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office'
+            xmlns:w='urn:schemas-microsoft-com:office:word'
+            xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset="utf-8">
+        <title>Договор СОУТ</title>
+        <style>
+          body { font-family: 'Arial Narrow', Arial, sans-serif; font-size: 11pt; line-height: 1.4; color: #000000; margin: 1.5cm; }
+          .center { text-align: center; }
+          .bold { font-weight: bold; }
+          .flex-row { display: flex; justify-content: space-between; margin: 6px 0; }
+          .signatures { display: flex; justify-content: space-between; margin-top: 30px; gap: 40px; }
+          .signatures .sig-block { flex: 1; min-width: 200px; }
+          .signatures .sig-block .underline { border-bottom: 1px solid #000; width: 100%; display: block; margin-top: 4px; }
+          table { border-collapse: collapse; width: 100%; margin: 8px auto; font-size: 10pt; }
+          td, th { border: 1px solid #000; padding: 4px 8px; text-align: center; }
+          td:first-child, th:first-child { width: 40px; }
+          td:nth-child(2) { text-align: left; }
+          td:last-child, th:last-child { text-align: right; }
+          ul { padding-left: 25px; margin: 4px 0; }
+          .right { text-align: right; }
+          .left { text-align: left; }
+          p { margin: 6px 0; text-align: justify; text-indent: 1.25cm; }
+          p.no-indent { text-indent: 0; }
+          .section-title { text-align: center; font-weight: bold; margin-top: 16px; margin-bottom: 8px; font-size: 12pt; }
+          .page-break { page-break-before: always; margin-top: 30px; }
+          .appendix-header { text-align: right; font-weight: bold; }
+          .page-break { page-break-before: always; }
+        </style>
+      </head>
+      <body>
+        ${html}
+      </body>
+      </html>
+      `;
+
+      const blob = new Blob([fullHtml], { type: 'application/msword' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    }
+
+    // =============================================
+    // 12. ИНИЦИАЛИЗАЦИЯ
+    // =============================================
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('contractDate').value = today;
+
+      const inputs = document.querySelectorAll('input');
+      inputs.forEach(inp => {
+        inp.addEventListener('input', updatePreview);
+        inp.addEventListener('change', updatePreview);
+      });
+
+      document.getElementById('updateBtn').addEventListener('click', updatePreview);
+      document.getElementById('updateBtn2').addEventListener('click', updatePreview);
+
+      document.getElementById('printBtn').addEventListener('click', function() {
+        window.print();
+      });
+      document.getElementById('printBtn2').addEventListener('click', function() {
+        window.print();
+      });
+
+      document.getElementById('wordBtn').addEventListener('click', exportToWord);
+      document.getElementById('wordBtn2').addEventListener('click', exportToWord);
+
+      updatePreview();
+    });
+  </script>
 
 </body>
 </html>
